@@ -4,6 +4,7 @@ struct ContentView: View {
     @State private var game = GameModel()
     @State private var showingSettings = false
     @State private var showingMethodology = false
+    @State private var showingStats = false
 
     private let columns = [GridItem(.adaptive(minimum: 100), spacing: 12)]
 
@@ -11,7 +12,6 @@ struct ContentView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    scoreBar
                     dateCard
                     if game.showTimer {
                         timerView
@@ -34,6 +34,21 @@ struct ContentView: View {
                         Image(systemName: "questionmark.circle")
                     }
                     .accessibilityLabel("Methodology")
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    // Stats are tucked away here so they don't distract from the question.
+                    Button {
+                        showingStats = true
+                    } label: {
+                        Image(systemName: "chart.bar")
+                    }
+                    .accessibilityLabel("Stats")
+                    .popover(isPresented: $showingStats) {
+                        scoreBar
+                            .padding()
+                            .frame(minWidth: 300)
+                            .presentationCompactAdaptation(.popover)
+                    }
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -65,8 +80,6 @@ struct ContentView: View {
             stat("Streak", "\(game.currentStreak)")
             stat("Best", "\(game.bestStreak)")
         }
-        .padding(.vertical, 10)
-        .background(.quaternary.opacity(0.5), in: .rect(cornerRadius: 12))
     }
 
     private func stat(_ title: String, _ value: String) -> some View {
